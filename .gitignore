@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local data / scratch
+*.local.json
+/tmp/
+
+# `npm run verify` mail outbox — it contains live verification codes, so it must
+# never be committed even by accident.
+.mail-outbox.jsonl

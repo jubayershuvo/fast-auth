@@ -1,26 +1,395 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   FastAuth design system — dark-first SaaS theme
+   Tailwind v4: tokens declared in @theme become real utilities
+   (e.g. --color-surface-900 => bg-surface-900).
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+}
+
+/* Scrollbar thumb reads from the token, so it is visible on either theme. */
+*:hover::-webkit-scrollbar-thumb {
+  background: var(--color-surface-600);
+}
+
+
+@theme {
+  /* Neutral ramp — slightly blue-shifted for a modern "product" feel. */
+  --color-canvas: var(--canvas);
+  --color-surface-950: var(--surface-950);
+  --color-surface-900: var(--surface-900);
+  --color-surface-850: var(--surface-850);
+  --color-surface-800: var(--surface-800);
+  --color-surface-700: var(--surface-700);
+  --color-surface-600: var(--surface-600);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-subtle: var(--ink-subtle);
+
+  /* Brand — indigo/violet gradient. */
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+
+  /* Semantic status. */
+  --color-success-400: var(--success-400);
+  --color-success-500: var(--success-500);
+  --color-success-900: var(--success-900);
+  --color-danger-400: var(--danger-400);
+  --color-danger-500: var(--danger-500);
+  --color-danger-900: var(--danger-900);
+  --color-warn-400: var(--warn-400);
+  --color-warn-500: var(--warn-500);
+  --color-warn-900: var(--warn-900);
+  --color-info-400: var(--info-400);
+  --color-info-500: var(--info-500);
+  --color-info-900: var(--info-900);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-card: 0.875rem;
+}
+
+/* ==========================================================================
+   Theme palettes.
+
+   Every colour the product uses is one of the tokens above, and each of those
+   is an alias for a plain custom property defined HERE. That indirection is
+   what makes theming a one-place change: `bg-surface-900` and `text-ink` are
+   written the same in all 29 pages, and swapping the values below re-paints
+   every one of them. Adding `dark:` variants to components instead would mean
+   touching every file and would still miss anything added later.
+
+   Dark is the default, set on :root. Light is applied by a `data-theme`
+   attribute on <html> — chosen over a `.light` class because it is a
+   declaration rather than a class, so it cannot be accidentally removed by a
+   re-render or lost to Tailwind's class merging.
+   ========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+
+  --grid-ink: #ffffff;
+  --glow-brand: rgba(99, 102, 241, 0.18);
+  --glow-info: rgba(56, 189, 248, 0.08);
+
+  --canvas: #08090c;
+  --surface-950: #0b0d11;
+  --surface-900: #101319;
+  --surface-850: #14181f;
+  --surface-800: #1a1f27;
+  --surface-700: #242a34;
+  --surface-600: #333b48;
+
+  --line: #222834;
+  --line-strong: #2e3542;
+
+  --ink: #eef1f6;
+  --ink-muted: #9aa4b5;
+  --ink-subtle: #6b7688;
+
+  --brand-300: #a5b4fc;
+  --brand-400: #818cf8;
+  --brand-500: #6366f1;
+  --brand-600: #4f46e5;
+  --brand-700: #4338ca;
+
+  --success-400: #4ade80;
+  --success-500: #22c55e;
+  --success-900: #052e16;
+  --danger-400: #f87171;
+  --danger-500: #ef4444;
+  --danger-900: #450a0a;
+  --warn-400: #fbbf24;
+  --warn-500: #f59e0b;
+  --warn-900: #451a03;
+  --info-400: #38bdf8;
+  --info-500: #0ea5e9;
+  --info-900: #082f49;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/*
+  Light palette.
+
+  The ramp INVERTS relative to dark mode: `surface-950` becomes the lightest
+  and `surface-600` the darkest, so "higher number = closer to the text" keeps
+  holding and the existing markup reads correctly with no per-component
+  overrides. Ink darkens for contrast on white.
+
+  The 900/800/700 "status" tokens are pale tints rather than near-black, because
+  they are used as ALERT BACKGROUNDS behind a `-400` foreground. Keeping that
+  pairing (pale bg + dark text) is what stops the alerts from becoming
+  dark-on-dark the moment the theme flips.
+*/
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* Decorative only — the glow is softened for light, where a wash of colour
+     over white reads as a stain rather than as atmosphere. */
+  --grid-ink: #0b1220;
+  --glow-brand: rgba(99, 102, 241, 0.10);
+  --glow-info: rgba(56, 189, 248, 0.07);
+
+  --canvas: #f4f6fa;
+  --surface-950: #ffffff;
+  --surface-900: #ffffff;
+  --surface-850: #f7f9fc;
+  --surface-800: #eef1f7;
+  --surface-700: #e2e7f0;
+  --surface-600: #cfd6e4;
+
+  --line: #dfe4ed;
+  --line-strong: #c3cbd9;
+
+  --ink: #10141b;
+  --ink-muted: #4d5769;
+  --ink-subtle: #6b7688;
+
+  --brand-300: #4f46e5;
+  --brand-400: #4338ca;
+  --brand-500: #4f46e5;
+  --brand-600: #4f46e5;
+  --brand-700: #3730a3;
+
+  --success-400: #15803d;
+  --success-500: #16a34a;
+  --success-900: #dcfce7;
+  --danger-400: #dc2626;
+  --danger-500: #dc2626;
+  --danger-900: #fee2e2;
+  --warn-400: #b45309;
+  --warn-500: #d97706;
+  --warn-900: #fef3c7;
+  --info-400: #0369a1;
+  --info-500: #0284c7;
+  --info-900: #e0f2fe;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+  Follow the OS when the visitor has expressed no preference.
+
+  These are plain custom properties, not `@media` blocks, so they cannot
+  override an explicit choice: an attribute selector on <html> outranks a type
+  selector on the same element, which is exactly the precedence we want.
+*/
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+
+    --grid-ink: #0b1220;
+    --glow-brand: rgba(99, 102, 241, 0.10);
+    --glow-info: rgba(56, 189, 248, 0.07);
+
+    --canvas: #f4f6fa;
+    --surface-950: #ffffff;
+    --surface-900: #ffffff;
+    --surface-850: #f7f9fc;
+    --surface-800: #eef1f7;
+    --surface-700: #e2e7f0;
+    --surface-600: #cfd6e4;
+
+    --line: #dfe4ed;
+    --line-strong: #c3cbd9;
+
+    --ink: #10141b;
+    --ink-muted: #4d5769;
+    --ink-subtle: #6b7688;
+
+    --brand-300: #4f46e5;
+    --brand-400: #4338ca;
+    --brand-500: #4f46e5;
+    --brand-600: #4f46e5;
+    --brand-700: #3730a3;
+
+    --success-400: #15803d;
+    --success-500: #16a34a;
+    --success-900: #dcfce7;
+    --danger-400: #dc2626;
+    --danger-500: #dc2626;
+    --danger-900: #fee2e2;
+    --warn-400: #b45309;
+    --warn-500: #d97706;
+    --warn-900: #fef3c7;
+    --info-400: #0369a1;
+    --info-500: #0284c7;
+    --info-900: #e0f2fe;
+  }
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+html,
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+/*
+  Theme change animation.
+
+  Scoped to the properties that actually carry colour, and disabled entirely
+  until the app has loaded (`html.theme-ready`) so it cannot fire during the
+  first paint — that would animate the page in from the wrong theme, which is
+  the one flash this whole mechanism exists to prevent.
+*/
+html.theme-ready,
+html.theme-ready body,
+html.theme-ready *,
+html.theme-ready *::before,
+html.theme-ready *::after {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    fill 180ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-ready,
+  html.theme-ready *,
+  html.theme-ready *::before,
+  html.theme-ready *::after {
+    transition: none;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+  Subtle grid backdrop used behind auth screens.
+
+  `currentColor` rather than a fixed white alpha: these lines are 2.5% opacity,
+  which is invisible against a light background and was effectively a dark-mode
+  only decoration. Deriving from the ink token means the same class reads as a
+  faint tint on white and a faint lift on black.
+*/
+.bg-grid {
+  background-image:
+    linear-gradient(to right, currentColor 1px, transparent 1px),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 48px 48px;
+  color: var(--grid-ink);
+  opacity: 0.04;
+}
+
+.bg-glow {
+  background:
+    radial-gradient(60rem 32rem at 50% -12%, var(--glow-brand), transparent 65%),
+    radial-gradient(40rem 24rem at 85% 8%, var(--glow-info), transparent 60%);
+}
+
+/* Tabular figures keep metric/stat columns visually aligned. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Component primitives (kept here so utilities stay out of markup)
+   ========================================================================== */
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium
+           transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-md {
+    @apply h-10 px-4;
+  }
+  .btn-sm {
+    @apply h-8 px-3 text-[13px];
+  }
+  .btn-primary {
+    @apply bg-brand-600 text-white hover:bg-brand-500;
+  }
+  .btn-secondary {
+    @apply bg-surface-800 text-ink border border-line-strong hover:bg-surface-700;
+  }
+  .btn-ghost {
+    @apply text-ink-muted hover:text-ink hover:bg-surface-800;
+  }
+  .btn-danger {
+    @apply bg-danger-500 text-white hover:bg-danger-400;
+  }
+  .btn-danger-soft {
+    @apply bg-danger-900/60 text-danger-400 border border-danger-500/30 hover:bg-danger-900;
+  }
+
+  .card {
+    @apply rounded-[var(--radius-card)] border border-line bg-surface-900;
+  }
+
+  .label {
+    @apply mb-1.5 block text-[13px] font-medium text-ink-muted;
+  }
+
+  .input {
+    @apply h-10 w-full rounded-lg border border-line-strong bg-surface-950 px-3 text-sm text-ink
+           placeholder:text-ink-subtle transition-colors
+           focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500
+           disabled:opacity-50;
+  }
+  .input-error {
+    @apply border-danger-500 focus:border-danger-500 focus:ring-danger-500;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium
+           uppercase tracking-wide;
+  }
+
+  .table-head {
+    @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-subtle;
+  }
+  .table-cell {
+    @apply px-4 py-3 text-sm text-ink;
+  }
+
+  /* Contained horizontal scrolling for dense tables. `overscroll-behavior`
+     stops a sideways swipe inside a table from also scrolling the page, which
+     otherwise makes the layout feel like it is fighting the user. */
+  .table-scroll {
+    @apply overflow-x-auto overscroll-x-contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Long identifiers (app ids, tokens, user agents, IPs) have no spaces, so
+     without this they force the page to scroll horizontally on a phone. */
+  .break-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+/* Touch devices get larger tap targets. Visual density is preserved on
+   pointer-precise devices, where a 32px button is easy to hit accurately. */
+@media (pointer: coarse) {
+  .btn-sm {
+    min-height: 2.75rem;
+  }
+  .btn-md {
+    min-height: 2.75rem;
+  }
 }
